@@ -24,12 +24,12 @@
                             <table class="table">
                                 <thead>
                                 <tr>
-                                    <th>ID</th>
+                                    
                                     <th>USN</th>
                                     <th> Name</th>
                                     <th>Semester</th>
                                     <th>Message</th>
-                                    <th>Sended On</th>
+                                    <th>Recieved Date</th>
                                     <th>Reply</th>
                                 </tr>
                                 </thead>
@@ -37,7 +37,6 @@
                                 {% for feedback in feedbacks %}
                                 <tbody>
                                 <tr>
-                                    <td>{{ feedback.id }}</td>
                                     <td>{{ feedback.student_id.admin.username }}</td>
                                     <td>{{ feedback.student_id.admin.first_name }} {{ feedback.student_id.admin.last_name }}</td>
                                     <td>{{ feedback.student_id.batch_id.semester }}</td>

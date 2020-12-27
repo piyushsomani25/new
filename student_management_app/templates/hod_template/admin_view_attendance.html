@@ -58,10 +58,10 @@
                             </div>
 
                             <div class="form-group">
-                                <label>Session Year </label>
+                                <label>Semester </label>
                                 <select class="form-control" name="session_year_id" id="session_year_id">
                                     {% for session_year in session_years %}
-                                        <option value="{{ session_year.id }}">{{ session_year.session_start_year }} to {{ session_year.session_end_year }}</option>
+                                        <option value="{{ session_year.id }}">{{ session_year.semester }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -139,7 +139,7 @@
                 $.ajax({
                     url:'{% url 'admin_get_attendance_dates' %}',
                     type:'POST',
-                    data:{subject:subject, session_year_id:session_year_id},
+                    data:{subject:subject, batch_year_id:batch_year_id},
                 })
 
                 

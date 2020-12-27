@@ -59,9 +59,8 @@
                             <table class="table table-hover text-nowrap">
                             <thead>
                                 <tr>
-                                <th>ID</th>
-                                <th>Batch Start Year</th>
                                 <th>Semester</th>
+                                <th>Batch Start Year</th>
                                 <!--<th>Batch End Year</th>-->
                                 <th>Action</th>
                                 </tr>
@@ -69,9 +68,8 @@
                             <tbody>
                                 {% for session_year in session_years %}
                                 <tr>
-                                <td>{{ session_year.id }}</td>
-                                <td>{{ session_year.batch_start_year }}</td>
                                 <td>{{ session_year.semester }}</td>
+                                <td>{{ session_year.batch_start_year }}</td>
                                 <td>
                                     <a href="{% url 'edit_session' session_year.id %}" class="btn btn-success">Edit</a> 
                                     <a href="{% url 'delete_session' session_year.id %}" class="btn btn-danger">Delete</a>

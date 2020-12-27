@@ -42,21 +42,21 @@ def admin_home(request):
         
         # For Saffs
         staff_attendance_present_list=[]
-    
+        #staff_attendance_leave_list=[]
         staff_name_list=[]
 
         staffs = Staffs.objects.all()
         for staff in staffs:
             subject_ids = Subjects.objects.filter(staff_id=staff.admin.id)
             attendance = Attendance.objects.filter(subject_id__in=subject_ids).count()
-            
+            #leaves = LeaveReportStaff.objects.filter(staff_id=staff.id, leave_status=1).count()
             staff_attendance_present_list.append(attendance)
-        
+             #staff_attendance_leave_list.append(leaves)
             staff_name_list.append(staff.admin.first_name)
 
         # For Students
         student_attendance_present_list=[]
-
+        student_attendance_leave_list=[]
         student_name_list=[]
 
         students = Students.objects.all()
@@ -65,7 +65,7 @@ def admin_home(request):
             absent = AttendanceReport.objects.filter(student_id=student.id, status=False).count()
         
             student_attendance_present_list.append(attendance)
-        
+            student_attendance_leave_list.append(absent)
             student_name_list.append(student.admin.first_name)
 
 
@@ -80,7 +80,7 @@ def admin_home(request):
             "subject_list": subject_list,
             "student_count_list_in_subject": student_count_list_in_subject,
             "staff_attendance_present_list": staff_attendance_present_list,
-            
+            "student_attendance_leave_list":student_attendance_leave_list,
             "staff_name_list": staff_name_list,
             "student_attendance_present_list": student_attendance_present_list,
         
@@ -558,7 +558,7 @@ def edit_student_save(request):#Student
             first_name = form.cleaned_data['first_name']
             last_name = form.cleaned_data['last_name']
             address = form.cleaned_data['address']
-            course_id = form.cleaned_data['course_id']
+            course_id = form.cleaned_data['dept_id']
             gender = form.cleaned_data['gender']
             session_year_id = form.cleaned_data['session_year_id']
 
@@ -586,10 +586,10 @@ def edit_student_save(request):#Student
                 student_model = Students.objects.get(admin=student_id)
                 student_model.address = address
 
-                course = Courses.objects.get(id=course_id)
+                course = Department.objects.get(id=course_id)
                 student_model.course_id = course
 
-                session_year_obj = SessionYearModel.objects.get(id=session_year_id)
+                session_year_obj = Batch.objects.get(id=session_year_id)
                 student_model.session_year_id = session_year_obj
 
                 student_model.gender = gender
@@ -601,8 +601,20 @@ def edit_student_save(request):#Student
 
                 messages.success(request, "Student Updated Successfully!")
                 return redirect('/edit_student/'+student_id)
-            except:
-                messages.success(request, "Failed to Uupdate Student.")
+            except Exception as e:
+                exception_type, exception_object, exception_traceback = sys.exc_info()
+
+                filename = exception_traceback.tb_frame.f_code.co_filename
+
+                line_number = exception_traceback.tb_lineno
+
+
+                print("Exception type: ", exception_type)
+
+                print("File name: ", filename)
+
+                print("Line number: ", line_number)
+                messages.error(request, "Failed to Update Student.")
                 return redirect('/edit_student/'+student_id)
         else:
             return redirect('/edit_student/'+student_id)
@@ -622,11 +634,13 @@ def delete_student(request, student_id):
 def add_subject(request):
     courses =Department.objects.all()
     staffs = CustomUser.objects.filter(user_type='2')
+    a=[i for i in range(1,6)]
     context = {
         "courses": courses,
-        "staffs": staffs
+        "staffs": staffs,
+        "range":a
     }
-    return render(request, 'hod_template/add_subject_template.html', context)
+    return render(request, 'hod_template/add_subject_template.html', context    )
 
 
 
@@ -636,21 +650,35 @@ def add_subject_save(request):
         return redirect('add_subject')
     else:
         subject_name = request.POST.get('subject')
-
+        sid=request.POST.get('subjectid')
         course_id = request.POST.get('course')
         course = Department.objects.get(id=course_id)
-        
+        credit=request.POST.get('credit')
+        print(credit)
         staff_id = request.POST.get('staff')
         staff = CustomUser.objects.get(id=staff_id)
 
         try:
-            subject = Subjects(subject_name=subject_name, dept_id=course, staff_id=staff)
+            subject = Subjects(subject_name=subject_name, dept_id=course, staff_id=staff,cid=sid)
+            print(subject_name)
             subject.save()
             messages.success(request, "Subject Added Successfully!")
             return redirect('add_subject')
-        except:
-            messages.error(request, "Failed to Add Subject!")
-            return redirect('add_subject')
+        except Exception as e:
+                exception_type, exception_object, exception_traceback = sys.exc_info()
+
+                filename = exception_traceback.tb_frame.f_code.co_filename
+
+                line_number = exception_traceback.tb_lineno
+
+
+                print("Exception type: ", exception_type)
+
+                print("File name: ", filename)
+
+                print("Line number: ", line_number)
+                messages.error(request, "Failed to Add Subject!")
+                return redirect('add_subject')
 
 
 def manage_subject(request):
@@ -665,9 +693,11 @@ def edit_subject(request, subject_id):
     subject = Subjects.objects.get(id=subject_id)
     courses = Department.objects.all()
     staffs = CustomUser.objects.filter(user_type='2')
+    a=[i for i in range(1,6)]
     context = {
         "subject": subject,
         "courses": courses,
+        "range":a,
         "staffs": staffs,
         "id": subject_id
     }
@@ -679,19 +709,23 @@ def edit_subject_save(request):
         HttpResponse("Invalid Method.")
     else:
         subject_id = request.POST.get('subject_id')
+        sid=request.POST.get('subjectid')
         subject_name = request.POST.get('subject')
         course_id = request.POST.get('course')
+        credit=request.POST.get('credit')
         staff_id = request.POST.get('staff')
 
         try:
             subject = Subjects.objects.get(id=subject_id)
             subject.subject_name = subject_name
 
-            course = Courses.objects.get(id=course_id)
+            course = Department.objects.get(id=course_id)
             subject.course_id = course
 
             staff = CustomUser.objects.get(id=staff_id)
             subject.staff_id = staff
+            subject.credit=credit
+            subject.cid=sid
             
             subject.save()
 
@@ -699,9 +733,20 @@ def edit_subject_save(request):
             # return redirect('/edit_subject/'+subject_id)
             return HttpResponseRedirect(reverse("edit_subject", kwargs={"subject_id":subject_id}))
 
-        except:
-            messages.error(request, "Failed to Update Subject.")
-            return HttpResponseRedirect(reverse("edit_subject", kwargs={"subject_id":subject_id}))
+        except Exception as e:
+                exception_type, exception_object, exception_traceback = sys.exc_info()
+
+                filename = exception_traceback.tb_frame.f_code.co_filename
+
+                line_number = exception_traceback.tb_lineno
+                print("Exception type: ", exception_type)
+
+                print("File name: ", filename)
+
+                print("Line number: ", line_number)
+
+                messages.error(request, "Failed to Update Subject.")
+                return HttpResponseRedirect(reverse("edit_subject", kwargs={"subject_id":subject_id}))
             # return redirect('/edit_subject/'+subject_id)
 
 
@@ -798,16 +843,16 @@ def admin_view_attendance(request):
 def admin_get_attendance_dates(request):
     # Getting Values from Ajax POST 'Fetch Student'
     subject_id = request.POST.get("subject")
-    session_year = request.POST.get("session_year_id")
+    session_year = request.POST.get("batch_year_id")
 
     # Students enroll to Course, Course has Subjects
     # Getting all data from subject model based on subject_id
     subject_model = Subjects.objects.get(id=subject_id)
 
-    session_model = Batch.objects.get(id=session_year)
+    #session_model = Batch.objects.get(id=session_year)
 
     # students = Students.objects.filter(course_id=subject_model.course_id, session_year_id=session_model)
-    attendance = Attendance.objects.filter(subject_id=subject_model, session_year_id=session_model)
+    attendance = Attendance.objects.filter(subject_id=subject_model)
 
     # Only Passing Student Id and Student Name Only
     list_data = []

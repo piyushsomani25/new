@@ -49,18 +49,28 @@
                                 </div>
                                 {% endif %}
                             
-
-                        <div class="card-body">
-                            <div class="form-group">
+                                <div class="card-body">
+                                <div class="form-group">
+                                <label>Subject ID </label>
+                                <input type="text" class="form-control" name="subjectid" placeholder="Enter Subject ID">
+                                </div>
+                                <div class="form-group">
                                 <label>Subject Name </label>
                                 <input type="text" class="form-control" name="subject" placeholder="Enter Subject">
                             </div>
-
                             <div class="form-group">
                                 <label>Depatment</label>
                                 <select class="form-control" name="course">
                                     {% for course in courses %}
                                         <option value="{{ course.id }}">{{ course.dept_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Credit</label>
+                                <select class="form-control" name="credit">
+                                    {% for r in range %}
+                                        <option value="{{ r }}">{{ r}}</option>
                                     {% endfor %}
                                 </select>
                             </div>

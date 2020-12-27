@@ -1,7 +1,7 @@
 {% extends 'hod_template/base_template.html' %}
 
 {% block page_title %}
-    Manage Student
+    Manage Staff
 {% endblock page_title %}
 
 {% block main_content %}
@@ -56,19 +56,18 @@
                             </div>
                         </div>
                         <!-- /.card-header -->
-                        <div class="card-body table-responsive p-0">
+                            <div class="card-body table-responsive p-0">
                             <table class="table table-hover text-nowrap">
                             <thead>
                                 <tr>
-                                <th>ID</th>
+                                <th>USN</th>
                                 <th>First Name</th>
-                                <th>Last Name</th>
-                                <th>Username</th>
+                                <th>Last Name</th>>
                                 <th>Email</th>
-                                <th>Address</th>
                                 <th>Gender</th>
-                                <th>Profile Pic</th>
                                 <th>Branch</th>
+                                <th>Profile Pic</th>
+                                <th>Address</th>
                                 <th>Last Login</th>
                                 <th>Date Joined</th>
                                 <th>Action</th>
@@ -77,16 +76,15 @@
                             <tbody>
                                 {% for student in staffs %}
                                 <tr>
-                                <td>{{ student.admin.id }}</td>
+                                <td>{{ student.admin.username }}</td>
                                 <td>{{ student.admin.first_name }}</td>
                                 <td>{{ student.admin.last_name }}</td>
-                                <td>{{ student.admin.username }}</td>
                                 <td>{{ student.admin.email }}</td>
-                                <td>{{ student.address }}</td>
                                 <td>{{ student.gender }}</td>
-                                <td> <img src="{{ student.profile_pic }}" style="width: 100px;" /> </td>
                                 <!--<td>{{ student.batch_id.semester }}</td>-->
                                 <td>{{ student.dept_id.dept_name }}</td>
+                                <td> <img src="{{ student.profile_pic }}" style="width: 100px;" /> </td>
+                                <td>{{ student.address }}</td>
                                 <td>{{ student.admin.last_login }}</td>
                                 <td>{{ student.admin.date_joined }}</td>
                                 <td>

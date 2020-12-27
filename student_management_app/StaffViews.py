@@ -299,12 +299,38 @@ def staff_add_result_save(request):
         return redirect('staff_add_result')
     else:
         student_admin_id = request.POST.get('student_list')
-        cie1 = request.POST.get('cie1')
-        cie2 = request.POST.get('cie2')
-        cie3 = request.POST.get('cie3')
-        quiz1 = request.POST.get('quiz1')
-        quiz2 = request.POST.get('quiz2')
-        quiz3 = request.POST.get('quiz3')
+        cie1 = int(request.POST.get('cie1'))
+        cie2 = int(request.POST.get('cie2'))
+        cie3 = int(request.POST.get('cie3'))
+        quiz1 = int(request.POST.get('quiz1'))
+        quiz2 = int(request.POST.get('quiz2'))
+        quiz3 = int(request.POST.get('quiz3'))
+        if(cie1<0 or cie1>50):
+            messages.error(request, "CIE I marks not in range")
+            messages.error(request, "0 to 50 allowed")
+
+            return redirect('staff_add_result')
+        if(cie2<0 or cie2>50):
+            messages.error(request, "CIE II marks not in range")
+            messages.error(request, "0 to 50 allowed")
+            return redirect('staff_add_result')
+        if(cie3<0 or cie3>50):
+            messages.error(request, "CIE III marks not in range")
+            messages.error(request, "0 to 50 allowed")
+            return redirect('staff_add_result')
+        if(quiz1<0 or quiz1>10):
+            messages.error(request, "QUIZ I marks not in range")
+            messages.error(request, "0 to 10 allowed")
+            return redirect('staff_add_result')
+        if(quiz2<0 or quiz2>10):
+            messages.error(request, "QUIZ II marks not in range")
+            messages.error(request, "0 to 10 allowed")
+            return redirect('staff_add_result')
+        if(quiz3<0 or quiz3>10):
+            messages.error(request, "QUIZ III marks not in range")
+            messages.error(request, "0 to 10 allowed")
+            return redirect('staff_add_result')
+
         lab=request.POST.get('lab')
         print(lab)
         selfstudy=request.POST.get('selfstudy')
