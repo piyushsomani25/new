@@ -7,8 +7,8 @@ from django.dispatch import receiver
 
 class Batch(models.Model):
     id = models.AutoField(primary_key=True)
-    semester=models.IntegerField(default=0)
-    batch_start_year = models.IntegerField()
+    semester=models.IntegerField(default=0,unique=True,blank=False)
+    batch_start_year = models.IntegerField(unique=True,blank=False)
     #batch_end_year = models.DateField()
     objects = models.Manager()
 
@@ -31,10 +31,14 @@ class AdminHOD(models.Model):
 
 class Department(models.Model):
     id = models.AutoField(primary_key=True)
-    dept_name = models.CharField(max_length=255)
+    dept_name = models.CharField(max_length=255,unique=True,blank=False,default=1)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     objects = models.Manager()
+    def clean(self):
+        from django.core.exceptions import ValidationError
+        if self.name == '':
+            raise ValidationError('Empty error message')
 
 class Staffs(models.Model):
     id = models.AutoField(primary_key=True)
@@ -49,15 +53,19 @@ class Staffs(models.Model):
     
 class Subjects(models.Model):
     id =models.AutoField(primary_key=True)
-    subject_name = models.CharField(max_length=255,)
+    subject_name = models.CharField(max_length=255,blank=False)
     dept_id = models.ForeignKey(Department, on_delete=models.CASCADE)
-    cid=models.CharField(max_length=8,unique=True,null=False)
-    batch_id = models.ForeignKey(Batch, on_delete=models.CASCADE)
+    cid=models.CharField(max_length=8,unique=True,blank=False)
+    batch_id = models.ForeignKey(Batch, on_delete=models.CASCADE,default=2)
     credit=models.IntegerField(default=0)
     staff_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     objects = models.Manager()
+    def clean(self):
+        from django.core.exceptions import ValidationError
+        if self.name == '':
+            raise ValidationError('Empty error message')
 
 
 

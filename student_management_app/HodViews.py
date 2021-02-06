@@ -280,7 +280,8 @@ def edit_staff_save(request):
 def delete_staff(request, staff_id):
     staff = Staffs.objects.get(admin=staff_id)
     try:
-        staff.delete()
+        ad=staff.delete()
+
         messages.success(request, "Staff Deleted Successfully.")
         return redirect('manage_staff')
     except:
@@ -302,6 +303,7 @@ def add_course_save(request):
         course = request.POST.get('course')
         try:
             course_model = Department(dept_name=course)
+            cource_model.full_clean()
             course_model.save()
             messages.success(request, "Department Added Successfully!")
             return redirect('add_course')
@@ -671,6 +673,7 @@ def add_subject_save(request):
         try:
             subject = Subjects(subject_name=subject_name, dept_id=course, staff_id=staff,cid=sid,batch_id=semes,credit=credit)
             print(subject_name)
+            subject.full_clean()
             subject.save()
             messages.success(request, "Subject Added Successfully!")
             return redirect('add_subject')
