@@ -117,7 +117,7 @@ class AddStaffForm(forms.Form):
             ('Female','Female')
         )
         
-        dept_id = forms.ChoiceField(label="Course", choices=course_list, widget=forms.Select(attrs={"class":"form-control"}))
+        dept_id = forms.ChoiceField(label="Depatrment", choices=course_list, widget=forms.Select(attrs={"class":"form-control"}))
         gender = forms.ChoiceField(label="Gender", choices=gender_list, widget=forms.Select(attrs={"class":"form-control"}))
         profile_pic = forms.FileField(label="Profile Pic", required=False, widget=forms.FileInput(attrs={"class":"form-control"}))
 

@@ -8,7 +8,7 @@ from django.dispatch import receiver
 class Batch(models.Model):
     id = models.AutoField(primary_key=True)
     semester=models.IntegerField(default=0)
-    batch_start_year = models.DateField()
+    batch_start_year = models.IntegerField()
     #batch_end_year = models.DateField()
     objects = models.Manager()
 
@@ -38,10 +38,10 @@ class Department(models.Model):
 
 class Staffs(models.Model):
     id = models.AutoField(primary_key=True)
-    admin = models.OneToOneField(CustomUser, on_delete = models.CASCADE)
-    gender = models.CharField(max_length=50,default='Male')
+    admin = models.OneToOneField(CustomUser, on_delete = models.DO_NOTHING)
+    gender = models.CharField(max_length=50)
     address = models.TextField()
-    dept_id = models.ForeignKey(Department, on_delete=models.DO_NOTHING, default=1)
+    dept_id = models.ForeignKey(Department, on_delete=models.CASCADE, default=1)
     phn_no=models.IntegerField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -49,10 +49,10 @@ class Staffs(models.Model):
     
 class Subjects(models.Model):
     id =models.AutoField(primary_key=True)
-    subject_name = models.CharField(max_length=255)
-    dept_id = models.ForeignKey(Department, on_delete=models.CASCADE, default=1)
-    cid=models.CharField(max_length=8,default='Pls Enter')
-    batch_id = models.ForeignKey(Batch, on_delete=models.SET_NULL,null=True,blank=True)
+    subject_name = models.CharField(max_length=255,)
+    dept_id = models.ForeignKey(Department, on_delete=models.CASCADE)
+    cid=models.CharField(max_length=8,unique=True,null=False)
+    batch_id = models.ForeignKey(Batch, on_delete=models.CASCADE)
     credit=models.IntegerField(default=0)
     staff_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -69,8 +69,8 @@ class Students(models.Model):
     address = models.TextField()
     phn_no=models.IntegerField(null=True)
     dob=models.DateField(null=True)
-    dept_id = models.ForeignKey(Department, on_delete=models.DO_NOTHING, default=1)
-    batch_id = models.ForeignKey(Batch, on_delete=models.SET_NULL,null=True,blank=True)
+    dept_id = models.ForeignKey(Department, on_delete=models.CASCADE, default=1)
+    batch_id = models.ForeignKey(Batch, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     #usn=models.TextField(unique=True)
@@ -81,7 +81,7 @@ class Students(models.Model):
 class Attendance(models.Model):
     # Subject Attendance
     id = models.AutoField(primary_key=True)
-    subject_id = models.ForeignKey(Subjects, on_delete=models.DO_NOTHING)
+    subject_id = models.ForeignKey(Subjects, on_delete=models.CASCADE)
     attendance_date = models.DateField()
     batch_id= models.ForeignKey(Batch, on_delete=models.CASCADE,null=True,blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

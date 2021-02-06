@@ -36,7 +36,7 @@ def admin_home(request):
         student_count_list_in_subject = []
         for subject in subject_all:
             course = Department.objects.get(id=subject.dept_id.id)
-            student_count = Students.objects.filter(dept_id=course.id).count()
+            student_count = Students.objects.filter(dept_id=course.id).filter(batch_id=subject.batch_id).count()
             subject_list.append(subject.subject_name)
             student_count_list_in_subject.append(student_count)
         
@@ -161,8 +161,9 @@ def add_staff_save(request):
                 print("File name: ", filename)
 
                 print("Line number: ", line_number)
-                messages.error(request, "Failed to Add Student!")
-                return redirect('add_student')
+                print(e)
+                messages.error(request, "Failed to Add Staff !")
+                return redirect('add_staff')    
         else:
             return redirect('add_staff')
 
@@ -635,11 +636,14 @@ def add_subject(request):
     courses =Department.objects.all()
     staffs = CustomUser.objects.filter(user_type='2')
     a=[i for i in range(1,6)]
+    sem1=Batch.objects.all()
     context = {
         "courses": courses,
         "staffs": staffs,
-        "range":a
+        "range":a,
+        "sem":sem1
     }
+    #print(sem.semester  )
     return render(request, 'hod_template/add_subject_template.html', context    )
 
 
@@ -651,15 +655,21 @@ def add_subject_save(request):
     else:
         subject_name = request.POST.get('subject')
         sid=request.POST.get('subjectid')
+        semid=request.POST.get('sem')
+        semes=Batch.objects.get(id=semid)
+        print(semid)
+        print(semes)
+        #print(sem.semester)
         course_id = request.POST.get('course')
         course = Department.objects.get(id=course_id)
         credit=request.POST.get('credit')
         print(credit)
+        #sem=request.POST.get('sem')
         staff_id = request.POST.get('staff')
         staff = CustomUser.objects.get(id=staff_id)
 
         try:
-            subject = Subjects(subject_name=subject_name, dept_id=course, staff_id=staff,cid=sid)
+            subject = Subjects(subject_name=subject_name, dept_id=course, staff_id=staff,cid=sid,batch_id=semes,credit=credit)
             print(subject_name)
             subject.save()
             messages.success(request, "Subject Added Successfully!")
@@ -677,6 +687,7 @@ def add_subject_save(request):
                 print("File name: ", filename)
 
                 print("Line number: ", line_number)
+                print(e)
                 messages.error(request, "Failed to Add Subject!")
                 return redirect('add_subject')
 

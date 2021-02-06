@@ -74,6 +74,14 @@
                                     {% endfor %}
                                 </select>
                             </div>
+                            <div class="form-group">
+                                <label>Semester</label>
+                                <select class="form-control" name="sem">
+                                    {% for r in sem %}
+                                        <option value="{{ r.id}}">{{ r.semester}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
 
                             <div class="form-group">
                                 <label>Staff </label>
