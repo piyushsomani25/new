@@ -60,7 +60,7 @@
                             </div>
 
                             <div class="form-group">
-                                <label>Session Year </label>
+                                <label>Semester </label>
                                 <select class="form-control" name="session_year" id="session_year">
                                     {% for session_year in session_years %}
                                         <option value="{{ session_year.id }}">{{ session_year.semester}} </option>
@@ -89,7 +89,9 @@
             </div>
 
         </div><!-- /.container-fluid -->
+       
       </section>
+
 
   {% endblock main_content %}
 
@@ -103,6 +105,7 @@
 
             var subject=$("#subject").val()
             var session_year=$("#session_year").val()
+           
 
             $.ajax({
                 url:'{% url 'get_students' %}' ,
@@ -116,7 +119,8 @@
                 console.log(json_data)
                 //Displaying Attendance Date Input and Students Attendance
                 var div_data="<div class='form-group'><label>Student List</label> <select class='student_list form-control' name='student_list'>"
-
+                var x=json_data[0];
+                delete json_data[0];
                 for(key in json_data)
                 {
                     div_data+="<option value='"+ json_data[key]['id'] +"'>ID: "+ json_data[key]['id'] +" : "+ json_data[key]['name'] +"</option>";
@@ -155,17 +159,18 @@
 
                 div_data+="</div></div>";
                 div_data+="<div class='form-group'><div class='row'>";
-
+                console.log(x);
+               if(x){
                 div_data+="<div class='col-lg-6'>";
                 div_data+="<label>Lab Marks : </label><input type='text'name='lab' class='form-control' placeholder='Lab Marks' />";
                 div_data+="</div>";
-
+               }
+               
                 div_data+="<div class='col-lg-4'>";
                 div_data+="<label>Self-Study Marks: </label><input type='text'name='selfstudy' class='form-control' placeholder='self_study Marks' />";
                 div_data+="</div>";
                 div_data+="</div></div>";
-               
-
+                
                 div_data+="<div class='form-group'>";
                 div_data+="<button id='save_attendance' class='btn btn-success' type='submit'>Save Result</button>";
                 div_data+="</div>";

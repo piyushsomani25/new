@@ -52,7 +52,8 @@
                                         <td>{{ row.lab }}</td>
                                         <td>{{ row.selfstudy }}</td>
                                         <td>
-                                            {% if row.cie_1 >= 20 %}
+                                            
+                                            {% if row.status %}
                                                 <span class="alert alert-success">Pass</span>
                                             {% else %}
                                                 <span class="alert alert-danger">Fail</span>

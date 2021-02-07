@@ -122,7 +122,7 @@ def get_students(request):
 
     # Only Passing Student Id and Student Name Only
     list_data = []
-
+    list_data.append(subject_model.lab)
     for student in students:
         data_small={"id":student.admin.id, "name":student.admin.first_name+" "+student.admin.last_name}
         list_data.append(data_small)
@@ -161,6 +161,7 @@ def save_attendance_data(request):
         return HttpResponse("OK")
     except:
         return HttpResponse("Error")
+        print(e)
 
 
 
@@ -239,6 +240,7 @@ def update_attendance_data(request):
             attendance_report.save()
         return HttpResponse("OK")
     except:
+        print(e)
         return HttpResponse("Error")
 
 
@@ -286,9 +288,14 @@ def staff_profile_update(request):
 def staff_add_result(request):
     subjects = Subjects.objects.filter(staff_id=request.user.id)
     session_years = Batch.objects.all()
+    x=[]
+    for i in subjects:
+        if i.lab:
+            x.append(i.id)
     context = {
         "subjects": subjects,
         "session_years": session_years,
+        "a":x,
     }
     return render(request, "staff_template/add_result_template.html", context)
 
@@ -334,8 +341,8 @@ def staff_add_result_save(request):
         lab=request.POST.get('lab')
         print(lab)
         selfstudy=request.POST.get('selfstudy')
+        ct_id = request.POST.get('subject')
         subject_id = request.POST.get('subject')
-
         student_obj = Students.objects.get(admin=student_admin_id)
         subject_obj = Subjects.objects.get(id=subject_id)
 

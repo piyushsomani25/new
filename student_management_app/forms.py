@@ -41,7 +41,7 @@ class AddStudentForm(forms.Form):
         ('Female','Female')
     )
     
-    dept_id = forms.ChoiceField(label="Course", choices=course_list, widget=forms.Select(attrs={"class":"form-control"}))
+    dept_id = forms.ChoiceField(label="Department", choices=course_list, widget=forms.Select(attrs={"class":"form-control"}))
     gender = forms.ChoiceField(label="Gender", choices=gender_list, widget=forms.Select(attrs={"class":"form-control"}))
     session_year_id = forms.ChoiceField(label="Semester", choices=session_year_list, widget=forms.Select(attrs={"class":"form-control"}))
     # session_start_year = forms.DateField(label="Session Start", widget=DateInput(attrs={"class":"form-control"}))

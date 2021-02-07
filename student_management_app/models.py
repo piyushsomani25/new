@@ -42,7 +42,7 @@ class Department(models.Model):
 
 class Staffs(models.Model):
     id = models.AutoField(primary_key=True)
-    admin = models.OneToOneField(CustomUser, on_delete = models.DO_NOTHING)
+    admin = models.OneToOneField(CustomUser, on_delete = models.CASCADE)
     gender = models.CharField(max_length=50)
     address = models.TextField()
     dept_id = models.ForeignKey(Department, on_delete=models.CASCADE, default=1)
@@ -59,6 +59,7 @@ class Subjects(models.Model):
     batch_id = models.ForeignKey(Batch, on_delete=models.CASCADE,default=2)
     credit=models.IntegerField(default=0)
     staff_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    lab=models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     objects = models.Manager()
@@ -151,7 +152,7 @@ class StudentResult(models.Model):
     id = models.AutoField(primary_key=True)
     student_id = models.ForeignKey(Students, on_delete=models.CASCADE)
     subject_id = models.ForeignKey(Subjects, on_delete=models.CASCADE)
-    lab = models.FloatField(default=0)
+    lab = models.FloatField(default=0.0)
     selfstudy = models.FloatField(default=0)
     cie_1= models.IntegerField(default=0)
     cie_2= models.IntegerField(default=0)
@@ -159,6 +160,7 @@ class StudentResult(models.Model):
     quiz_1=models.IntegerField(default=0)
     quiz_2=models.IntegerField(default=0)
     quiz_3=models.IntegerField(default=0)
+    status=models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     objects = models.Manager()

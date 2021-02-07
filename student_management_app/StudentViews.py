@@ -162,8 +162,26 @@ def student_profile_update(request):
 def student_view_result(request):
     student = Students.objects.get(admin=request.user.id)
     student_result = StudentResult.objects.filter(student_id=student.id)
+    print(student_result)
+    print(student)
+    for i in student_result:
+        s=0
+        if(i.lab==0):
+            s=s+(i.cie_1+i.cie_2+i.cie_3)/3+i.quiz_1+i.quiz_2+i.quiz_2+i.selfstudy
+            if(s>=40):
+                i.status=True
+            else:
+                i.status=False
+        else:
+             s=s+(i.cie_1+i.cie_2+i.cie_3)/3+i.quiz_1+i.quiz_2+i.quiz_2+i.selfstudy+i.lab
+             if(s>=60):
+                 i.status=True
+             else:
+                 i.status=False
+
     context = {
         "student_result": student_result,
+        
     }
     return render(request, "student_template/student_view_result.html", context)
 

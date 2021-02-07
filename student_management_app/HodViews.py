@@ -302,8 +302,11 @@ def add_course_save(request):
     else:
         course = request.POST.get('course')
         try:
+            if(course==""):
+                raise ValidationError
             course_model = Department(dept_name=course)
-            cource_model.full_clean()
+            
+            #cource_model.full_clean()
             course_model.save()
             messages.success(request, "Department Added Successfully!")
             return redirect('add_course')
@@ -638,12 +641,14 @@ def add_subject(request):
     courses =Department.objects.all()
     staffs = CustomUser.objects.filter(user_type='2')
     a=[i for i in range(1,6)]
+    b=[True,False]
     sem1=Batch.objects.all()
     context = {
         "courses": courses,
         "staffs": staffs,
         "range":a,
-        "sem":sem1
+        "sem":sem1,
+        "islab":b
     }
     #print(sem.semester  )
     return render(request, 'hod_template/add_subject_template.html', context    )
@@ -661,6 +666,7 @@ def add_subject_save(request):
         semes=Batch.objects.get(id=semid)
         print(semid)
         print(semes)
+        x=request.POST.get('lab')
         #print(sem.semester)
         course_id = request.POST.get('course')
         course = Department.objects.get(id=course_id)
@@ -669,11 +675,14 @@ def add_subject_save(request):
         #sem=request.POST.get('sem')
         staff_id = request.POST.get('staff')
         staff = CustomUser.objects.get(id=staff_id)
+        lab=request.POST.get('lab')
 
         try:
-            subject = Subjects(subject_name=subject_name, dept_id=course, staff_id=staff,cid=sid,batch_id=semes,credit=credit)
-            print(subject_name)
-            subject.full_clean()
+            if subject_name=="" or sid=="":
+                raise error
+            subject = Subjects(subject_name=subject_name, dept_id=course, staff_id=staff,cid=sid,batch_id=semes,credit=credit,lab=lab)
+            print(subject.lab)
+            #subject.full_clean()
             subject.save()
             messages.success(request, "Subject Added Successfully!")
             return redirect('add_subject')
@@ -729,10 +738,11 @@ def edit_subject_save(request):
         credit=request.POST.get('credit')
         staff_id = request.POST.get('staff')
 
+
         try:
             subject = Subjects.objects.get(id=subject_id)
             subject.subject_name = subject_name
-
+            
             course = Department.objects.get(id=course_id)
             subject.course_id = course
 
@@ -771,9 +781,22 @@ def delete_subject(request, subject_id):
         subject.delete()
         messages.success(request, "Subject Deleted Successfully.")
         return redirect('manage_subject')
-    except:
-        messages.error(request, "Failed to Delete Subject.")
-        return redirect('manage_subject')
+    except Exception as e:
+                exception_type, exception_object, exception_traceback = sys.exc_info()
+
+                filename = exception_traceback.tb_frame.f_code.co_filename
+
+                line_number = exception_traceback.tb_lineno
+                print("Exception type: ", exception_type)
+
+                print("File name: ", filename)
+
+                print("Line number: ", line_number)
+
+                messages.error(request, "Failed to Delete Subject.")
+                print(e)
+                return HttpResponseRedirect(reverse("edit_subject", kwargs={"subject_id":subject_id}))
+            # return redirect('/edit_subject/'+subject_id)
 
 
 @csrf_exempt
