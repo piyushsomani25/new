@@ -350,11 +350,14 @@ def staff_add_result_save(request):
         sub=Subjects.objects.all().filter(id=subject)
         islab=Subjects.objects.all().filter(id=subject).values_list('lab')
         quiz3 = int(request.POST.get('quiz3'))
-        if(islab==True):
+        print(islab)
+        if(islab):
             lab=int(request.POST.get('lab'))
+            print(123)
         else:
             lab=0
-        print(islab)
+            print(456)
+        print(lab)
         selfstudy=int(request.POST.get('selfstudy'))
         #subject=request.POST.get('subject')
         
@@ -432,7 +435,7 @@ def staff_add_result_save(request):
                 messages.success(request, "Result Updated Successfully!")
                 return redirect('staff_add_result')
             else:
-                result = StudentResult(student_id=student_obj, subject_id=subject_obj,cie_1 = cie1,cie_2 = cie2,cie_3 = cie3,quiz_1=quiz1,quiz_2=quiz2,quiz_3=quiz3,selfstudy=selfstudy,status=status)
+                result = StudentResult(student_id=student_obj, subject_id=subject_obj,cie_1 = cie1,cie_2 = cie2,cie_3 = cie3,quiz_1=quiz1,quiz_2=quiz2,quiz_3=quiz3,selfstudy=selfstudy,status=status,lab=lab)
                 result.save()
                 messages.success(request, "Result Added Successfully!")
                 return redirect('staff_add_result')

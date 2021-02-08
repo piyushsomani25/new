@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
 import json,sys
+import string
 
 from student_management_app.models import CustomUser, Staffs, Department, Subjects, Students, Batch, FeedBackStudent, FeedBackStaffs,Attendance, AttendanceReport
 from .forms import AddStudentForm, EditStudentForm,AddStaffForm, EditStaffForm
@@ -101,6 +102,9 @@ def add_staff(request):
 
 
 def add_staff_save(request):
+    num=0
+    al=0
+    sym=0
     if request.method != "POST":
         messages.error(request, "Invalid Method")
         return redirect('add_staff')
@@ -113,6 +117,9 @@ def add_staff_save(request):
             username = form.cleaned_data['username']
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
+            
+        
+                
             address = form.cleaned_data['address']
             #session_year_id = form.cleaned_data['session_year_id']
             course_id = form.cleaned_data['dept_id']
@@ -130,6 +137,17 @@ def add_staff_save(request):
                 profile_pic_url = None
             try:
                 print(request.POST)
+                for i in password:
+                   if(ord(i)>=48 and ord(i)<=57):
+                        num+=1
+                   elif((ord(i)>=65 and ord(i)<=90) or ((ord(i)>=97 and ord(i)<=122))):
+                        al+=1
+                   else:
+                        sym+=1
+                print(len(password),num,sym,al)
+                if(len(password)<8 or num<2 or sym<1):
+                    raise NameError('HiThere')
+                
                 user = CustomUser.objects.create_user(username=username, password=password, email=email, first_name=first_name, last_name=last_name, user_type=2)
                 print(2)
                 user.staffs.address = address
@@ -303,7 +321,7 @@ def add_course_save(request):
         course = request.POST.get('course')
         try:
             if(course==""):
-                raise ValidationError
+                raise error
             course_model = Department(dept_name=course)
             
             #cource_model.full_clean()
@@ -451,6 +469,9 @@ def add_student(request):
 
 
 def add_student_save(request):
+    num=0
+    sym=0
+    al=0
     if request.method != "POST":
         messages.error(request, "Invalid Method")
         return redirect('add_student')
@@ -479,6 +500,16 @@ def add_student_save(request):
             else:
                 profile_pic_url = None
             try:
+                for i in password:
+                   if(ord(i)>=48 and ord(i)<=57):
+                        num+=1
+                   elif((ord(i)>=65 and ord(i)<=90) or ((ord(i)>=97 and ord(i)<=122))):
+                        al+=1
+                   else:
+                        sym+=1
+                print(len(password),num,sym,al)
+                if(len(password)<8 or num<2 or sym<1):
+                    raise NameError('HiThere')
                 print(request.POST)
                 user = CustomUser.objects.create_user(username=username, password=password, email=email, first_name=first_name, last_name=last_name, user_type=3)
                 print(2)
