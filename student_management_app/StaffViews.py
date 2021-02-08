@@ -128,6 +128,29 @@ def get_students(request):
         list_data.append(data_small)
 
     return JsonResponse(json.dumps(list_data), content_type="application/json", safe=False)
+@csrf_exempt
+def get_students_marks(request):
+    # Getting Values from Ajax POST 'Fetch Student'
+    subject_id = request.POST.get("subject")
+    session_year = request.POST.get("session_year")
+
+    # Students enroll to Course, Course has Subjects
+    # Getting all data from subject model based on subject_id
+    subject_model = Subjects.objects.get(id=subject_id)
+
+    session_model =Batch.objects.get(id=session_year)
+
+    students = StudentResult.objects.filter(subject_id=subject_model)
+
+    # Only Passing Student Id and Student Name Only
+    list_data=[]
+    for student in students:
+        #x=Students.objects.all.filter(id=student.student_id)
+        data_small={"usn":student.student_id.admin.username,"name":student.student_id.admin.first_name+" "+student.student_id.admin.last_name,"cie_1":student.cie_1,"cie_2":student.cie_2,"cie_3":student.cie_3,"quiz_1":student.quiz_1,"quiz_2":student.quiz_2,"quiz_3":student.quiz_3,"selfstudy":student.selfstudy,"lab":student.lab,"status":student.status}
+        list_data.append(data_small)
+    print(list_data)
+
+    return JsonResponse(json.dumps(list_data), content_type="application/json", safe=False)
 
 
 
@@ -298,7 +321,19 @@ def staff_add_result(request):
         "a":x,
     }
     return render(request, "staff_template/add_result_template.html", context)
-
+def staff_view_marks(request):
+    subjects = Subjects.objects.filter(staff_id=request.user.id)
+    session_years = Batch.objects.all()
+    x=[]
+    for i in subjects:
+        if i.lab:
+            x.append(i.id)
+    context = {
+        "subjects": subjects,
+        "session_years": session_years,
+        "a":x,
+    }
+    return render(request, "staff_template/staff_view_marks.html", context)
 
 def staff_add_result_save(request):
     if request.method != "POST":
@@ -311,7 +346,33 @@ def staff_add_result_save(request):
         cie3 = int(request.POST.get('cie3'))
         quiz1 = int(request.POST.get('quiz1'))
         quiz2 = int(request.POST.get('quiz2'))
+        subject=request.POST.get('subject')
+        sub=Subjects.objects.all().filter(id=subject)
+        islab=Subjects.objects.all().filter(id=subject).values_list('lab')
         quiz3 = int(request.POST.get('quiz3'))
+        if(islab==True):
+            lab=int(request.POST.get('lab'))
+        else:
+            lab=0
+        print(islab)
+        selfstudy=int(request.POST.get('selfstudy'))
+        #subject=request.POST.get('subject')
+        
+        s=0
+        print(sub)
+        if(True):
+            s=s+(cie1+cie2+cie3)/3+quiz1+quiz2+quiz3+selfstudy
+            if(s>=40):
+                status=True
+            else:
+                status=False
+        else:
+             s=s+(cie1+cie2+cie3)/3+quiz1+quiz2+quiz3+selfstudy+lab
+             if(s>=60):
+                 status=True
+             else:
+                 status=False
+        print(status)
         if(cie1<0 or cie1>50):
             messages.error(request, "CIE I marks not in range")
             messages.error(request, "0 to 50 allowed")
@@ -337,10 +398,16 @@ def staff_add_result_save(request):
             messages.error(request, "QUIZ III marks not in range")
             messages.error(request, "0 to 10 allowed")
             return redirect('staff_add_result')
+        if(lab<0 or lab>50):
+            messages.error(request, "Lab not in range")
+            messages.error(request, "0 to 50 allowed")
+            return redirect('staff_add_result')
+        if(selfstudy<0 or selfstudy>20):
+            messages.error(request, "SelfStudy marks not in range")
+            messages.error(request, "0 to 20 allowed")
+            return redirect('staff_add_result')
 
-        lab=request.POST.get('lab')
-        print(lab)
-        selfstudy=request.POST.get('selfstudy')
+        
         ct_id = request.POST.get('subject')
         subject_id = request.POST.get('subject')
         student_obj = Students.objects.get(admin=student_admin_id)
@@ -358,13 +425,14 @@ def staff_add_result_save(request):
                 result.quiz_2=quiz2
                 result.quiz_3=quiz3
                 result.lab=lab
+                result.status=status
                 result.selfstudy=selfstudy
                 print(result)
                 result.save()
                 messages.success(request, "Result Updated Successfully!")
                 return redirect('staff_add_result')
             else:
-                result = StudentResult(student_id=student_obj, subject_id=subject_obj,cie_1 = cie1,cie_2 = cie2,cie_3 = cie3,quiz_1=quiz1,quiz_2=quiz2,quiz_3=quiz3,selfstudy=selfstudy)
+                result = StudentResult(student_id=student_obj, subject_id=subject_obj,cie_1 = cie1,cie_2 = cie2,cie_3 = cie3,quiz_1=quiz1,quiz_2=quiz2,quiz_3=quiz3,selfstudy=selfstudy,status=status)
                 result.save()
                 messages.success(request, "Result Added Successfully!")
                 return redirect('staff_add_result')

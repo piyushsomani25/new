@@ -1,0 +1,206 @@
+{% extends 'staff_template/base_template.html' %}
+
+{% block page_title %}
+   View Result
+{% endblock page_title %}
+
+{% block main_content %}
+
+{% load static %}
+
+<section class="content">
+        <div class="container-fluid">
+
+            <div class="row">
+                <div class="col-md-12">
+                    <!-- general form elements -->
+                    <form method="POST" action="{% url 'staff_add_result_save' %}">
+                    {% csrf_token %}
+                    <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">View Marks</h3>
+                    </div>
+                    <!-- /.card-header -->
+
+                                {% comment %} Display Messages {% endcomment %}
+                                {% if messages %}
+                                <div class="form-group">
+                                <div class="col-12">
+                                    {% for message in messages %}
+                                    {% if message.tags == "error" %}
+                                        <div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin-top: 10px;">
+                                        {{ message }}
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                        </div>
+                                    {% elif message.tags == "success" %}
+                                        <div class="alert alert-success alert-dismissible fade show" role="alert" style="margin-top: 10px;">
+                                        {{ message }}
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                        </div>
+                                    {% endif %}
+                                    {% endfor %}
+                                </div>
+                                </div>
+                                {% endif %}
+                            
+
+                        <div class="card-body">
+                           
+                            <div class="form-group">
+                                <label>Subject </label>
+                                <select class="form-control" name="subject" id="subject">
+                                    {% for subject in subjects %}
+                                        <option value="{{ subject.id }}">{{ subject.subject_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Semester </label>
+                                <select class="form-control" name="session_year" id="session_year">
+                                    {% for session_year in session_years %}
+                                        <option value="{{ session_year.id }}">{{ session_year.semester}} </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+
+                        </div>
+                        <!-- /.card-body -->
+
+                        <div class="card-footer">
+                        <button type="button" class="btn btn-primary" id="fetch_student">Fetch Marks</button>
+                        </div>
+
+                        {% comment %} Displaying Students Here {% endcomment %}
+
+                        <div class="card-footer" id="student_data">
+                            
+                        </div> 
+
+                    </div>
+                    </form>
+                    <!-- /.card -->
+
+                </div>
+            </div>
+
+        </div><!-- /.container-fluid -->
+       
+      </section>
+
+
+  {% endblock main_content %}
+
+{% block custom_js %}
+
+<script>
+    $(document).ready(function(){
+        $("#fetch_student").click(function(){
+
+            // Displaying Students Based on Staff, Course and Session Enrolled
+
+            var subject=$("#subject").val()
+            var session_year=$("#session_year").val()
+           
+
+            $.ajax({
+                url:'{% url 'get_students_marks' %}' ,
+                type:'POST',
+                data:{subject:subject, session_year:session_year},
+            })
+
+            
+            .done(function(response){
+                var json_data=JSON.parse(response);
+                console.log(json_data)
+                //Displaying Attendance Date Input and Students Attendance
+                var div_data=""
+               
+                
+               div_data+='<section class="content">';
+                    div_data+='<div class="container-fluid">';
+
+            
+
+                        div_data+="<div class='row'>";
+                            div_data+="<div class='col-md-12'>";
+                                div_data+='<div class="card card-primary">';
+                                    div_data+= '<div class="card-header">';
+                                        div_data+= '<h3 class="card-title">Result</h3>';
+                                        div_data+= '</div>';
+                                        div_data+='<div class="card-body">';
+                                            div_data+= '<div class="table-responsive">';
+                                                div_data+= "<table class='table'>";
+                                                    div_data+="<thead class='thead-light'>";
+                                                        div_data+= '<tr>';
+                                                            div_data+='<th>USN</th>';
+                                                            div_data+='<th>Student</th>';
+                                                            div_data+= '<th>CIE 1</th>';
+                                                            div_data+="<th>CIE 2</th>";
+                                                            div_data+= "<th>CIE 3</th>";
+                                                            div_data+= "<th>Quiz 1</th>";
+                                                            div_data+="<th>Quiz 2</th>";
+                                                            div_data+="<th>Quiz 3</th>";
+                                                            div_data+="<th>Lab</th>";
+                                                            div_data+="<th>Self Study</th>";
+                                                            //div_data+="<th>status</th>";
+                                                            div_data+="</tr>";
+                                                           
+
+                                                                for(key in json_data) 
+                                                                { div_data+="<tr>";
+                                                                div_data+="<td>"+json_data[key]['usn']+"</td>";
+                                                                div_data+="<td>"+json_data[key]['name']+"</td>";
+                                                                div_data+="<td>"+json_data[key]['cie_1']+"</td>";
+                                                                div_data+="<td>"+json_data[key]['cie_2']+"</td>";
+                                                                div_data+="<td>"+json_data[key]['cie_3']+"</td>";
+                                                                div_data+="<td>"+json_data[key]['quiz_1']+"</td>";
+                                                                div_data+="<td>"+json_data[key]['quiz_2']+"</td>";
+                                                                div_data+="<td>"+json_data[key]['quiz_3']+"</td>";
+                                                                div_data+="<td>"+json_data[key]['lab']+"</td>";
+                                                                div_data+="<td>"+json_data[key]['selfstudy']+"</td>";
+                                                                /*div_data+="<td>";
+                                                                    //div_data+="<h1>"+json_data[key]['status']+"</h1>"
+                                            /* if (json_data[key]['status']==true) 
+                                               {div_data+='<span class="alert alert-success">Pass</span>';}
+                                            else 
+                                            {
+                                                div_data+='<span class="alert alert-danger">Fail</span>';
+                                            }
+                                        
+                                                                
+                                                                    div_data+="</td>";*/
+                                                                    div_data+="</tr>";
+                                                                }
+                                                                console.log(json_data)
+                                                            div_data+="</thead>";
+                                                            div_data+="</table>";
+                                                            div_data+= "</div>";
+                                                            div_data+="</div>";
+                                                         
+                                                            div_data+="</div>";
+                                                            div_data+="</div>";
+                                                            div_data+= "</div>";
+
+                                                            div_data+="</div>";
+                                                           div_data+="</section>";
+               
+                console.log(div_data)
+                $("#student_data").html(div_data);
+
+            })
+            .fail(function(){
+                alert("Error in Fetching Students.")
+            })
+
+           
+
+        })
+    })
+</script>
+{% endblock custom_js %}
